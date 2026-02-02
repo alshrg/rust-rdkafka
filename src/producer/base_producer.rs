@@ -383,6 +383,27 @@ where
         }
     }
 
+    /// Polls the producer without an internal loop
+    ///
+    /// Regular calls to `poll` are required to process the events and execute
+    /// the message delivery callbacks.
+    pub fn poll_once<T: Into<Timeout>>(&self, timeout: T) {
+        let event = self.client().poll_event(&self.queue, timeout.into());
+        if let EventPollResult::Event(ev) = event {
+            let evtype = unsafe { rdsys::rd_kafka_event_type(ev.ptr()) };
+            match evtype {
+                rdsys::RD_KAFKA_EVENT_DR => self.handle_delivery_report_event(ev),
+                _ => {
+                    let evname = unsafe {
+                        let evname = rdsys::rd_kafka_event_name(ev.ptr());
+                        CStr::from_ptr(evname).to_string_lossy()
+                    };
+                    warn!("Ignored event '{}' on base producer poll", evname);
+                }
+            }
+        }
+    }
+
     fn handle_delivery_report_event(&self, event: NativePtr<RDKafkaEvent>) {
         let max_messages = unsafe { rdsys::rd_kafka_event_message_count(event.ptr()) };
         let messages: Vec<*const RDKafkaMessage> = Vec::with_capacity(max_messages);

@@ -6,6 +6,10 @@ See also the [rdkafka-sys changelog](rdkafka-sys/changelog.md).
 
 None
 
+## 0.39.13 (2026-02-15)
+* Bump rdkafka-sys.
+* Add poll error producer call
+
 ## 0.39.0 (2026-01-25)
 
 * Fix the char zero ending in native config ([#706]).

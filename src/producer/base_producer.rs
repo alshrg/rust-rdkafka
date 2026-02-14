@@ -56,7 +56,7 @@ use std::time::Duration;
 use rdkafka_sys as rdsys;
 use rdkafka_sys::rd_kafka_vtype_t::*;
 use rdkafka_sys::types::*;
-
+use crate::admin::NativeEvent;
 use crate::client::{Client, EventPollResult, NativeQueue};
 use crate::config::{ClientConfig, FromClientConfig, FromClientConfigAndContext};
 use crate::consumer::ConsumerGroupMetadata;
@@ -393,6 +393,7 @@ where
             let evtype = unsafe { rdsys::rd_kafka_event_type(ev.ptr()) };
             match evtype {
                 rdsys::RD_KAFKA_EVENT_DR => self.handle_delivery_report_event(ev),
+                rdsys::RD_KAFKA_EVENT_ERROR => {},
                 _ => {
                     let evname = unsafe {
                         let evname = rdsys::rd_kafka_event_name(ev.ptr());
@@ -402,6 +403,34 @@ where
                 }
             }
         }
+    }
+
+    /// Polls the producer without an internal loop and optionally returns the error
+    ///
+    /// Regular calls to `poll` are required to process the events and execute
+    /// the message delivery callbacks.
+    pub fn poll_with_error<T: Into<Timeout>>(&self, timeout: T) -> Option<KafkaError> {
+        let event = self.client().poll_event(&self.queue, timeout.into());
+        if let EventPollResult::Event(ev) = event {
+            let evtype = unsafe { rdsys::rd_kafka_event_type(ev.ptr()) };
+            match evtype {
+                rdsys::RD_KAFKA_EVENT_DR => self.handle_delivery_report_event(ev),
+                rdsys::RD_KAFKA_EVENT_ERROR => {
+                    let rdkafka_err = unsafe { rdsys::rd_kafka_event_error(ev.ptr()) };
+                    let error = KafkaError::Global(rdkafka_err.into());
+                    return Some(error);
+                },
+                _ => {
+                    let evname = unsafe {
+                        let evname = rdsys::rd_kafka_event_name(ev.ptr());
+                        CStr::from_ptr(evname).to_string_lossy()
+                    };
+                    warn!("Ignored event '{}' on base producer poll", evname);
+                }
+            }
+        }
+
+        None
     }
 
     fn handle_delivery_report_event(&self, event: NativePtr<RDKafkaEvent>) {

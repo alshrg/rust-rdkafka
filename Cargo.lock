@@ -1194,7 +1194,7 @@ dependencies = [
 
 [[package]]
 name = "rdkafka-sys"
-version = "4.13.0"
+version = "4.13.2"
 dependencies = [
  "cmake",
  "curl-sys",

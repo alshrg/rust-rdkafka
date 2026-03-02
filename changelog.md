@@ -6,6 +6,10 @@ See also the [rdkafka-sys changelog](rdkafka-sys/changelog.md).
 
 None
 
+## 0.70.132 (2026-03-02)
+* Bump rdkafka-sys.
+* Change version number
+
 ## 0.39.13 (2026-02-15)
 * Bump rdkafka-sys.
 * Add poll error producer call

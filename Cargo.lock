@@ -1165,7 +1165,7 @@ dependencies = [
 
 [[package]]
 name = "rdkafka"
-version = "0.70.132"
+version = "0.214.100"
 dependencies = [
  "async-std",
  "backon",
@@ -1194,7 +1194,7 @@ dependencies = [
 
 [[package]]
 name = "rdkafka-sys"
-version = "4.70.132"
+version = "4.214.100"
 dependencies = [
  "cmake",
  "curl-sys",

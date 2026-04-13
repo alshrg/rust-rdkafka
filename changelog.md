@@ -6,7 +6,11 @@ See also the [rdkafka-sys changelog](rdkafka-sys/changelog.md).
 
 None
 
-## 0.70.132 (2026-03-02)
+## 0.214.100 (2026-04-13)
+* Bump rdkafka-sys.
+* Change version number
+
+## 0.113.102 (2026-03-02)
 * Bump rdkafka-sys.
 * Change version number
 

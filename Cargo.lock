@@ -1165,7 +1165,7 @@ dependencies = [
 
 [[package]]
 name = "rdkafka"
-version = "0.214.100"
+version = "0.214.102"
 dependencies = [
  "async-std",
  "backon",

@@ -1,5 +1,8 @@
 # Changelog
 
+## v4.214.102 (2026-06-16)
+* Bump librdkafka to v2.14.2.
+
 ## v4.214.100 (2026-04-13)
 * Bump librdkafka to v2.14.0.
 * Change version number
